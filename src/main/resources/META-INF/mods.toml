@@ -1,0 +1,32 @@
+modLoader="javafml" #mandatory
+loaderVersion="[28,)"
+
+#issueTrackerURL="http://my.issue.tracker/" #optional
+
+[[mods]]
+modId="harvest"
+version="${file.jarVersion}"
+displayName="Harvest"
+#updateJSONURL="http://myurl.me/"
+#displayURL="http://example.com/"
+#logoFile="examplemod.png"
+
+authors="Naxanria"
+
+description='''
+Right click harvest
+'''
+# A dependency - use the . to indicate dependency for a specific modid. Dependencies are optional.
+[[dependencies.wtbw]] #optional
+    modId="forge" #mandatory
+    mandatory=true #mandatory
+    versionRange="[28.1.107,)" #mandatory
+    ordering="NONE"
+    side="BOTH"
+# Here's another dependency
+[[dependencies.wtbw]]
+    modId="minecraft"
+    mandatory=true
+    versionRange="[1.14.4]"
+    ordering="NONE"
+    side="BOTH"
