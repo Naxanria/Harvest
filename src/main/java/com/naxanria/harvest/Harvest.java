@@ -11,7 +11,9 @@ import net.minecraft.world.World;
 import net.minecraft.world.server.ServerWorld;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
+import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.fml.config.ModConfig;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -29,6 +31,7 @@ public class Harvest
   public Harvest()
   {
     MinecraftForge.EVENT_BUS.addListener(this::onInteract);
+    ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, Config.SPEC);
   }
   
   private void onInteract(final PlayerInteractEvent.RightClickBlock event)
@@ -43,9 +46,26 @@ public class Harvest
     BlockPos pos = event.getPos();
     BlockState state = world.getBlockState(pos);
     Block block = state.getBlock();
+  
+    Config config = Config.COMMON;
+    List<String> blacklist = config.blacklist.get();
+    boolean whitelist = config.whitelist.get();
+    boolean consumeSeed = config.consumeSeed.get();
     
     if (block instanceof CropsBlock)
     {
+      if (blacklist.contains(block.getRegistryName().toString()))
+      {
+        if (!whitelist)
+        {
+          return;
+        }
+      }
+      else if (whitelist)
+      {
+        return;
+      }
+      
       CropsBlock crop = (CropsBlock) block;
       if (crop.isMaxAge(state))
       {
@@ -56,9 +76,12 @@ public class Harvest
   
           for (ItemStack drop : drops)
           {
-            if (drop.getItem() == seed.getItem())
+            if (consumeSeed)
             {
-              drop.shrink(1);
+              if (drop.getItem() == seed.getItem())
+              {
+                drop.shrink(1);
+              }
             }
     
             if (!drop.isEmpty())
