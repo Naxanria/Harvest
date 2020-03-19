@@ -24,6 +24,7 @@ public class Config
   public ForgeConfigSpec.ConfigValue<List<String>> blacklist;
   public ForgeConfigSpec.BooleanValue whitelist;
   public ForgeConfigSpec.BooleanValue consumeSeed;
+  public ForgeConfigSpec.BooleanValue harvestNetherWart;
   
   public Config(ForgeConfigSpec.Builder builder)
   {
@@ -40,6 +41,10 @@ public class Config
     consumeSeed = builder
       .comment("Consumes a seed (from the drops) to replant")
       .define("consumeSeed", true);
+    
+    harvestNetherWart = builder
+      .comment("Harvest works on netherwart")
+      .define("netherwart", true);
   }
   
 }

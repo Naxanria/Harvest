@@ -1,15 +1,15 @@
 package com.naxanria.harvest;
 
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.CropsBlock;
+import net.minecraft.block.*;
 import net.minecraft.inventory.InventoryHelper;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.Items;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraft.world.server.ServerWorld;
 import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.common.util.Constants;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.common.Mod;
@@ -52,20 +52,20 @@ public class Harvest
     boolean whitelist = config.whitelist.get();
     boolean consumeSeed = config.consumeSeed.get();
     
-    if (block instanceof CropsBlock)
+    if (blacklist.contains(block.getRegistryName().toString()))
     {
-      if (blacklist.contains(block.getRegistryName().toString()))
-      {
-        if (!whitelist)
-        {
-          return;
-        }
-      }
-      else if (whitelist)
+      if (!whitelist)
       {
         return;
       }
-      
+    }
+    else if (whitelist)
+    {
+      return;
+    }
+    
+    if (block instanceof CropsBlock)
+    {
       CropsBlock crop = (CropsBlock) block;
       if (crop.isMaxAge(state))
       {
@@ -90,7 +90,35 @@ public class Harvest
             }
           }
   
-          world.setBlockState(pos, crop.withAge(0), 3);
+          world.setBlockState(pos, crop.withAge(0), Constants.BlockFlags.DEFAULT_AND_RERENDER);
+        }
+        
+        event.setCanceled(true);
+      }
+    }
+    else if (block == Blocks.NETHER_WART)
+    {
+      if (state.get(NetherWartBlock.AGE) == 3)
+      {
+        if (!world.isRemote)
+        {
+          List<ItemStack> drops = Block.getDrops(state, (ServerWorld) world, pos, null);
+          for (ItemStack drop : drops)
+          {
+            if (consumeSeed)
+            {
+              if (drop.getItem() == Items.NETHER_WART)
+              {
+                drop.shrink(1);
+              }
+            }
+            
+            if (!drop.isEmpty())
+            {
+              InventoryHelper.spawnItemStack(world, pos.getX() + .5, pos.getY() + .5, pos.getZ() + .5, drop);
+            }
+          }
+          world.setBlockState(pos, state.with(NetherWartBlock.AGE, 0), Constants.BlockFlags.DEFAULT_AND_RERENDER);
         }
         
         event.setCanceled(true);
