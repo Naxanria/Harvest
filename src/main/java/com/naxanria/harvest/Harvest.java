@@ -96,7 +96,7 @@ public class Harvest
         event.setCanceled(true);
       }
     }
-    else if (block == Blocks.NETHER_WART)
+    else if (block == Blocks.NETHER_WART && Config.COMMON.harvestNetherWart.get())
     {
       if (state.get(NetherWartBlock.AGE) == 3)
       {
