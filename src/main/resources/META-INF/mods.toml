@@ -1,12 +1,13 @@
 modLoader="javafml" #mandatory
 loaderVersion="[32,)"
-
+license="All Rights Reserved"
 #issueTrackerURL="http://my.issue.tracker/" #optional
 
 [[mods]]
 modId="harvest"
 version="${file.jarVersion}"
 displayName="Harvest"
+
 #updateJSONURL="http://myurl.me/"
 #displayURL="http://example.com/"
 #logoFile="examplemod.png"
